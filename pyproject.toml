@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[project]
+name = "app"
+version = "0.0.1"
+
+description = "FastApi template"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "fastapi==0.100.*",
+    "uvicorn==0.23.*",
+]
+[project.optional-dependencies]
+test = [
+    "pytest"
+]
+lint = [
+    "ruff",
+    "black",
+]
+
+
+[project.urls]
+"Homepage" = "https://github.com/tishka17/fastapi-template"
+"Bug Tracker" = "https://github.com/tishka17/fastapi-template"
