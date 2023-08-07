@@ -1,7 +1,23 @@
 from abc import ABC, abstractmethod
 
+from app.application.models import User
+
+
+class UoW(ABC):
+    @abstractmethod
+    def commit(self):
+        raise NotImplementedError
+
+    @abstractmethod
+    def flush(self):
+        raise NotImplementedError
+
 
 class DatabaseGateway(ABC):
+    @abstractmethod
+    def add_user(self, name: str) -> User:
+        raise NotImplementedError
+
     @abstractmethod
     def get_int(self) -> int:
         raise NotImplementedError

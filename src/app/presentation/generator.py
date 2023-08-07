@@ -4,21 +4,22 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 
 from app.application.generator import generate
-from app.application.protocols.database import DatabaseGateway
+from app.application.protocols.database import DatabaseGateway, UoW
 
 generator_router = APIRouter()
 
 
 @dataclass
 class GeneratorResult:
-    value: int
+    user_id: int
 
 
 @generator_router.get("/generate")
 def generator(
         database: Annotated[DatabaseGateway, Depends()],
+        uow: Annotated[UoW, Depends()],
 ) -> GeneratorResult:
-    value = generate(database)
+    user = generate(database, uow, "tishka17")
     return GeneratorResult(
-        value=value,
+        user_id=user.id,
     )
