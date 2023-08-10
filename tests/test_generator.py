@@ -10,12 +10,8 @@ from app.main.web import init_routers
 
 
 class MockDatabase(DatabaseGateway):
-    def add_user(self, name: str) -> User:
-        user = User(
-            name=name,
-        )
+    def add_user(self, user: User) -> None:
         user.id = 42
-        return user
 
 
 @fixture

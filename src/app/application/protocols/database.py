@@ -15,5 +15,5 @@ class UoW(ABC):
 
 class DatabaseGateway(ABC):
     @abstractmethod
-    def add_user(self, name: str) -> User:
+    def add_user(self, user: User) -> None:
         raise NotImplementedError

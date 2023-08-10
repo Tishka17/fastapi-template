@@ -8,7 +8,6 @@ class SqlaGateway(DatabaseGateway):
     def __init__(self, session: Session):
         self.session = session
 
-    def add_user(self, name: str) -> User:
-        user = User(name=name)
+    def add_user(self, user: User) -> None:
         self.session.add(user)
-        return user
+        return

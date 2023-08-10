@@ -19,7 +19,7 @@ def get_users(
         database: Annotated[DatabaseGateway, Depends()],
         uow: Annotated[UoW, Depends()],
 ) -> SomeResult:
-    user = new_user(database, uow, "tishka17")
+    user_id = new_user(database, uow, "tishka17")
     return SomeResult(
-        user_id=user.id,
+        user_id=user_id,
     )
