@@ -12,7 +12,3 @@ class SqlaGateway(DatabaseGateway):
         user = User(name=name)
         self.session.add(user)
         return user
-
-    def get_int(self) -> int:
-        return 101
-

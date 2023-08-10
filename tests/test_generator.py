@@ -1,26 +1,42 @@
-from app.application.protocols.database import DatabaseGateway
+from unittest.mock import Mock
+
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from pytest import fixture
 
-from app.main.web import init_routers, init_dependencies
+from app.application.models import User
+from app.application.protocols.database import DatabaseGateway, UoW
+from app.main.web import init_routers
 
 
 class MockDatabase(DatabaseGateway):
-
-    def get_int(self) -> int:
-        return 0
+    def add_user(self, name: str) -> User:
+        user = User(
+            name=name,
+        )
+        user.id = 42
+        return user
 
 
 @fixture
-def client():
+def mock_uow() -> UoW:
+    uow = Mock()
+    uow.commit = Mock()
+    uow.flush = Mock()
+    return uow
+
+
+@fixture
+def client(mock_uow):
     app = FastAPI()
     init_routers(app)
     app.dependency_overrides[DatabaseGateway] = MockDatabase
+    app.dependency_overrides[UoW] = lambda: mock_uow
     return TestClient(app)
 
 
-def test_generator(client):
-    response = client.get("/generate")
+def test_generator(client, mock_uow):
+    response = client.get("/users")
+    mock_uow.commit.assert_called_once_with()
     assert response.status_code == 200
-    assert response.json() == {"value": 0}
+    assert response.json() == {"user_id": 42}

@@ -74,7 +74,7 @@ def new_session(session_maker: sessionmaker) -> Iterable[Session]:
         yield session
 
 
-def init_dependencies_stub(app: FastAPI):
+def init_dependencies(app: FastAPI):
     session_maker = create_session_maker()
 
     app.dependency_overrides[Session] = partial(new_session, session_maker)

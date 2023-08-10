@@ -17,7 +17,3 @@ class DatabaseGateway(ABC):
     @abstractmethod
     def add_user(self, name: str) -> User:
         raise NotImplementedError
-
-    @abstractmethod
-    def get_int(self) -> int:
-        raise NotImplementedError

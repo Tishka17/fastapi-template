@@ -4,10 +4,8 @@ from app.application.protocols.database import DatabaseGateway
 
 class StubDatabaseGateway(DatabaseGateway):
     def add_user(self, name: str) -> User:
-        return User(
-            id=0,
+        user = User(
             name=name,
         )
-
-    def get_int(self) -> int:
-        return 100
+        user.id = 0
+        return user

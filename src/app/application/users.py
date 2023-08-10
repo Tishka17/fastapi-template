@@ -2,7 +2,7 @@ from .models import User
 from .protocols.database import DatabaseGateway, UoW
 
 
-def generate(
+def new_user(
         database: DatabaseGateway,
         uow: UoW,
         name: str,
