@@ -1,5 +1,7 @@
 import os
-from typing import Callable
+from functools import partial
+from logging import getLogger
+from typing import Callable, Generator, Iterable
 
 from fastapi import FastAPI, Depends
 from sqlalchemy import create_engine
@@ -8,6 +10,8 @@ from sqlalchemy.orm import Session, sessionmaker
 from app.adapters.sqlalchemy_db.gateway import SqlaGateway
 from app.adapters.sqlalchemy_db.models import metadata_obj
 from app.application.protocols.database import DatabaseGateway, UoW
+
+logger = getLogger(__name__)
 
 
 class Stub:
@@ -47,8 +51,11 @@ def new_uow(session: Session = Depends(Stub(Session))):
     return session
 
 
-def init_dependencies_stub(app: FastAPI):
+def create_session_maker():
     db_uri = os.getenv("DB_URI")
+    if not db_uri:
+        raise ValueError("DB_URI env variable is not set")
+
     engine = create_engine(
         db_uri,
         echo=True,
@@ -59,12 +66,17 @@ def init_dependencies_stub(app: FastAPI):
         },
     )
     metadata_obj.create_all(bind=engine)  # TODO migrations
-    sm = sessionmaker(engine, autoflush=False, expire_on_commit=False)
+    return sessionmaker(engine, autoflush=False, expire_on_commit=False)
 
-    def new_session():
-        with sm() as session:
-            yield session
 
-    app.dependency_overrides[Session] = new_session
+def new_session(session_maker: sessionmaker) -> Iterable[Session]:
+    with session_maker() as session:
+        yield session
+
+
+def init_dependencies_stub(app: FastAPI):
+    session_maker = create_session_maker()
+
+    app.dependency_overrides[Session] = partial(new_session, session_maker)
     app.dependency_overrides[DatabaseGateway] = new_gateway
     app.dependency_overrides[UoW] = new_uow
