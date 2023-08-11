@@ -1,7 +1,7 @@
 import os
 from functools import partial
 from logging import getLogger
-from typing import Callable, Generator, Iterable
+from typing import Iterable
 
 from fastapi import FastAPI, Depends
 from sqlalchemy import create_engine
@@ -10,37 +10,22 @@ from sqlalchemy.orm import Session, sessionmaker
 from app.adapters.sqlalchemy_db.gateway import SqlaGateway
 from app.adapters.sqlalchemy_db.models import metadata_obj
 from app.application.protocols.database import DatabaseGateway, UoW
+from app.application.users import NewUser
+from app.presentation.depends_stub import Stub
 
 logger = getLogger(__name__)
 
 
-class Stub:
-    def __init__(self, dependency: Callable, **kwargs):
-        self._dependency = dependency
-        self._kwargs = kwargs
-
-    def __call__(self):
-        raise NotImplementedError
-
-    def __eq__(self, other) -> bool:
-        if isinstance(other, Stub):
-            return (
-                    self._dependency == other._dependency
-                    and self._kwargs == other._kwargs
-            )
-        else:
-            if not self._kwargs:
-                return self._dependency == other
-            return False
-
-    def __hash__(self):
-        if not self._kwargs:
-            return hash(self._dependency)
-        serial = (
-            self._dependency,
-            *self._kwargs.items(),
-        )
-        return hash(serial)
+def all_depends(cls: type) -> None:
+    """
+    Add `Depends()` to the class `__init__` methods, so it can be used
+    a fastapi dependency having own dependencies
+    """
+    init = cls.__init__
+    total_ars = init.__code__.co_kwonlyargcount + init.__code__.co_argcount - 1
+    init.__defaults__ = tuple(
+        Depends() for _ in range(total_ars)
+    )
 
 
 def new_gateway(session: Session = Depends(Stub(Session))):
@@ -80,3 +65,4 @@ def init_dependencies(app: FastAPI):
     app.dependency_overrides[Session] = partial(new_session, session_maker)
     app.dependency_overrides[DatabaseGateway] = new_gateway
     app.dependency_overrides[UoW] = new_uow
+    all_depends(NewUser)

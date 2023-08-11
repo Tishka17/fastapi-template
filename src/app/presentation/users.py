@@ -4,7 +4,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 
 from app.application.protocols.database import DatabaseGateway, UoW
-from app.application.users import new_user
+from app.application.users import new_user, NewUser
+from .depends_stub import Stub
 
 users_router = APIRouter()
 
@@ -15,11 +16,21 @@ class SomeResult:
 
 
 @users_router.get("/")
-def get_users(
+def add_users(
         database: Annotated[DatabaseGateway, Depends()],
         uow: Annotated[UoW, Depends()],
 ) -> SomeResult:
     user_id = new_user(database, uow, "tishka17")
+    return SomeResult(
+        user_id=user_id,
+    )
+
+
+@users_router.get("/alternative")
+def add_users_alternative(
+        new_user: Annotated[NewUser, Depends(Stub(NewUser))],
+) -> SomeResult:
+    user_id = new_user("tishka17")
     return SomeResult(
         user_id=user_id,
     )
