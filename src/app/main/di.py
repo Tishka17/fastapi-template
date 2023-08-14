@@ -50,7 +50,6 @@ def create_session_maker():
             "connect_timeout": 5,
         },
     )
-    metadata_obj.create_all(bind=engine)  # TODO migrations
     return sessionmaker(engine, autoflush=False, expire_on_commit=False)
 
 
