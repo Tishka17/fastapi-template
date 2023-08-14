@@ -17,5 +17,5 @@ alembic upgrade head
 Run
 
 ```bash
-uvicorn --factory app.main.web:create_app
+uvicorn --factory app.main:create_app
 ```

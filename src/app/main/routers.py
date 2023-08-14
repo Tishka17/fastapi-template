@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.presentation import root_router
+from app.api import root_router
 
 
 def init_routers(app: FastAPI):

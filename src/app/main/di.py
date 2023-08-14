@@ -11,14 +11,14 @@ from app.adapters.sqlalchemy_db.gateway import SqlaGateway
 from app.adapters.sqlalchemy_db.models import metadata_obj
 from app.application.protocols.database import DatabaseGateway, UoW
 from app.application.users import NewUser
-from app.presentation.depends_stub import Stub
+from app.api.depends_stub import Stub
 
 logger = getLogger(__name__)
 
 
 def all_depends(cls: type) -> None:
     """
-    Add `Depends()` to the class `__init__` methods, so it can be used
+    Adds `Depends()` to the class `__init__` methods, so it can be used
     a fastapi dependency having own dependencies
     """
     init = cls.__init__
