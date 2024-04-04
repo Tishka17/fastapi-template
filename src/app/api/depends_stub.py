@@ -12,7 +12,7 @@ class Stub:
     `interactor: Annotated[Interactor, Depends(Stub(Interactor))]`
 
     And then you can declare how to create it:
-    `app.dependency_overrids[Interactor] = some_real_factory`
+    `app.dependency_overrides[Interactor] = some_real_factory`
 
     """
 
