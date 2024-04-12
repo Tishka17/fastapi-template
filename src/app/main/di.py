@@ -64,4 +64,5 @@ def init_dependencies(app: FastAPI):
     app.dependency_overrides[Session] = partial(new_session, session_maker)
     app.dependency_overrides[DatabaseGateway] = new_gateway
     app.dependency_overrides[UoW] = new_uow
+    app.dependency_overrides[NewUser] = NewUser
     all_depends(NewUser)
